@@ -10,7 +10,7 @@ import org.apache.flink.connector.datagen.source.DataGeneratorSource;
 @Slf4j
 public class DataGeneratorSourceUtil {
 
-    public static DataGeneratorSource<SanGuoUser> sanGuoUserDataGeneratorSource(int num){
+    public static DataGeneratorSource<SanGuoUser> sanGuoUserDataGeneratorSource(int num) {
         DataGeneratorSource<SanGuoUser> dataGeneratorSource = new DataGeneratorSource<SanGuoUser>(
                 new SanGuoUserGeneratorFunction(),
                 num,
