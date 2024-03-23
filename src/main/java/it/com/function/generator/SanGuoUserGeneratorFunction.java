@@ -1,4 +1,4 @@
-package it.com.function;
+package it.com.function.generator;
 
 import it.com.entity.SanGuoUser;
 import org.apache.commons.math3.random.RandomDataGenerator;

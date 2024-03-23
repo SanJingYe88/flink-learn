@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration monitorInterval="180" packages="">
+    <properties>
+        <!-- 日志输出文件名，这里配置的是从SpringBoot的yml中取配置来命名日志文件 -->
+        <property name="app.log">itzhimei-ms-${server.port:-8081}</property>
+        <!-- 日志输出目录 -->
+        <property name="LOG_HOME">/opt/logs/${server.log}</property>
+        <!--输出日志的格式-->
+        <property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss,SSS}:%4p [%X{traceId}] %C %t (%F:%L) - %m%n</property>
+    </properties>
+
+    <Appenders>
+        <!--Console -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${PATTERN}" />
+        </Console>
+        <RollingFile name="RollingFile" fileName="${LOG_HOME}.log"
+                     filePattern="${LOG_HOME}.log.%d{yyyy-MM-dd}" append="true"
+                     bufferedIO="true">
+            <PatternLayout pattern="${PATTERN}" />
+            <Filters>
+                <!-- 设置控制台只输出INFO及以上级别的信息(onMatch),其他的直接拒绝(onMismatch) -->
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="NEUTRAL" />
+                <StringMatchFilter text="feign.slf4j.Slf4jLogger" onMatch="ACCEPT" onMismatch="DENY" />
+            </Filters>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+        </RollingFile>
+
+        <!--异步appender -->
+        <Async name="AsyncAppender" includeLocation="true">
+            <AppenderRef ref="RollingFile" />
+        </Async>
+
+    </Appenders>
+
+    <Loggers>
+        <!--过滤掉spring和hibernate的一些无用的debug信息-->
+        <logger name="org.springframework" level="INFO"/>
+        <logger name="org.mybatis" level="INFO">
+            <!-- 添加如下设置，控制台会再打印一次 -->
+            <AppenderRef ref="Console"/>
+        </logger>
+        <logger name="org.apache.flink" level="ERROR"/>
+        <root level="INFO">
+            <appender-ref ref="Console"/>
+        </root>
+    </Loggers>
+</Configuration>

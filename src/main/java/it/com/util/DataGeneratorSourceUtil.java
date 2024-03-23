@@ -1,14 +1,20 @@
 package it.com.util;
 
+import it.com.entity.CarSpeedInfo;
 import it.com.entity.SanGuoUser;
-import it.com.function.SanGuoUserGeneratorFunction;
+import it.com.entity.StreetSpeedLimitRule;
 import it.com.function.binlog.BinLogGeneratorFunction;
+import it.com.function.generator.CarSpeedInfoGeneratorFunction;
+import it.com.function.generator.SanGuoUserGeneratorFunction;
+import it.com.function.generator.StreetSpeedLimitRuleGeneratorFunction;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.connector.source.util.ratelimit.RateLimiterStrategy;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.connector.datagen.source.DataGeneratorSource;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**
  * mock数据工具类
@@ -40,5 +46,35 @@ public class DataGeneratorSourceUtil {
                 })
         );
         return dataGeneratorSource;
+    }
+
+    // 汽车速度数据mock
+    public static DataGeneratorSource<CarSpeedInfo> carSpeedInfoDataGeneratorSource(int num) {
+        DataGeneratorSource<CarSpeedInfo> dataGeneratorSource = new DataGeneratorSource<CarSpeedInfo>(
+                new CarSpeedInfoGeneratorFunction(),
+                num,
+                RateLimiterStrategy.perSecond(1),
+                TypeInformation.of(CarSpeedInfo.class)
+        );
+        log.info("carSpeedInfoDataGeneratorSource start...");
+        return dataGeneratorSource;
+    }
+
+    // 汽车限速规则数据mock
+    public static DataGeneratorSource<StreetSpeedLimitRule> streetSpeedLimitRuleDataGeneratorSource(int num) {
+        DataGeneratorSource<StreetSpeedLimitRule> dataGeneratorSource = new DataGeneratorSource<StreetSpeedLimitRule>(
+                new StreetSpeedLimitRuleGeneratorFunction(),
+                num,
+                RateLimiterStrategy.perSecond(0.5),
+                TypeInformation.of(StreetSpeedLimitRule.class)
+        );
+        log.info("streetSpeedLimitRuleDataGeneratorSource start...");
+        return dataGeneratorSource;
+    }
+
+    public static void main(String[] args) throws Exception {
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.fromSource(DataGeneratorSourceUtil.carSpeedInfoDataGeneratorSource(10), WatermarkStrategy.noWatermarks(), "data-generator").print();
+        env.execute();
     }
 }
