@@ -1,0 +1,12 @@
+[X] 第一章_Flink简介
+[X] 第二章_Flink快速上手
+[ ] 第三章_Flink部署
+[X] 第四章_Flink运行时架构
+[X] 第五章_DataStream API（基础篇）
+[ ] 第六章_Flink中的时间和窗口
+[ ] 第七章_处理函数
+[ ] 第八章_多流转换
+[ ] 第九章_状态编程
+[X] 第十章_容错机制
+[ ] 第十一章_Table API和SQL
+[ ] 第十二章_Flink CEP

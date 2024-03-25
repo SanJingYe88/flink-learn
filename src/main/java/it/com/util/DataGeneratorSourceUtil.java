@@ -14,6 +14,9 @@ import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.connector.source.util.ratelimit.RateLimiterStrategy;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.connector.datagen.source.DataGeneratorSource;
+import org.apache.flink.connector.file.src.FileSource;
+import org.apache.flink.connector.file.src.reader.TextLineInputFormat;
+import org.apache.flink.core.fs.Path;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**
@@ -70,6 +73,20 @@ public class DataGeneratorSourceUtil {
         );
         log.info("streetSpeedLimitRuleDataGeneratorSource start...");
         return dataGeneratorSource;
+    }
+
+    /**
+     * 从指定文件中读取数据
+     * @param filePath 指定文件
+     * @return FileSource
+     */
+    public static FileSource<String> readFile(String filePath){
+        // import org.apache.flink.connector.file.src.FileSource;
+        FileSource<String> fileSource = FileSource.forRecordStreamFormat(new TextLineInputFormat()
+                // 注意 Path 的包 import org.apache.flink.core.fs.Path;
+                , new Path(filePath)).build();
+        log.info("readFile,filePath;{}", filePath);
+        return fileSource;
     }
 
     public static void main(String[] args) throws Exception {
