@@ -77,10 +77,11 @@ public class DataGeneratorSourceUtil {
 
     /**
      * 从指定文件中读取数据
+     *
      * @param filePath 指定文件
      * @return FileSource
      */
-    public static FileSource<String> readFile(String filePath){
+    public static FileSource<String> readFile(String filePath) {
         // import org.apache.flink.connector.file.src.FileSource;
         FileSource<String> fileSource = FileSource.forRecordStreamFormat(new TextLineInputFormat()
                 // 注意 Path 的包 import org.apache.flink.core.fs.Path;
