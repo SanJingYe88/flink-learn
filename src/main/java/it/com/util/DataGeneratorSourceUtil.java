@@ -17,6 +17,7 @@ import org.apache.flink.connector.datagen.source.DataGeneratorSource;
 import org.apache.flink.connector.file.src.FileSource;
 import org.apache.flink.connector.file.src.reader.TextLineInputFormat;
 import org.apache.flink.core.fs.Path;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**
@@ -88,6 +89,19 @@ public class DataGeneratorSourceUtil {
                 , new Path(filePath)).build();
         log.info("readFile,filePath;{}", filePath);
         return fileSource;
+    }
+
+    /**
+     * 从 socket 流中获取数据
+     * @param env
+     * @param hostName
+     * @param port
+     * @return
+     */
+    public static DataStreamSource<String> fromSocket(StreamExecutionEnvironment env, String hostName, int port) {
+        DataStreamSource<String> dataStreamSource = env.socketTextStream("localhost", 7777);
+        log.info("监控IP：{}, 端口：{}", hostName, port);
+        return dataStreamSource;
     }
 
     public static void main(String[] args) throws Exception {
