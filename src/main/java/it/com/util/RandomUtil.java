@@ -32,6 +32,11 @@ public class RandomUtil {
         return new Random().nextInt(3);
     }
 
+    public static String generateLoginEventType() {
+        int i = new Random().nextInt(3);
+        return i > 1 ? "success":"fail";
+    }
+
     public static void main(String[] args) {
         for (int i = 0; i < 10; i++) {
             double randomNumber = generateRandomDoubleUpTo120();
