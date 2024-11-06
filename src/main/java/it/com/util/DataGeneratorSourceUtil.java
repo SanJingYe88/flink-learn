@@ -3,12 +3,15 @@ package it.com.util;
 import it.com.entity.CarSpeedInfo;
 import it.com.entity.SanGuoUser;
 import it.com.entity.StreetSpeedLimitRule;
+import it.com.entity.WorkResult;
+import it.com.entity.Event;
 import it.com.function.binlog.BinLogGeneratorFunction;
+import it.com.function.ds.Tuple2GeneratorFunction;
 import it.com.function.generator.CarSpeedInfoGeneratorFunction;
 import it.com.function.generator.SanGuoUserGeneratorFunction;
 import it.com.function.generator.StreetSpeedLimitRuleGeneratorFunction;
+import it.com.function.generator.WorkResultGeneratorFunction;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.connector.source.util.ratelimit.RateLimiterStrategy;
@@ -52,7 +55,11 @@ public class DataGeneratorSourceUtil {
         return dataGeneratorSource;
     }
 
-    // 汽车速度数据mock
+    /**
+     * 汽车速度数据mock
+     * @param num num
+     * @return
+     */
     public static DataGeneratorSource<CarSpeedInfo> carSpeedInfoDataGeneratorSource(int num) {
         DataGeneratorSource<CarSpeedInfo> dataGeneratorSource = new DataGeneratorSource<CarSpeedInfo>(
                 new CarSpeedInfoGeneratorFunction(),
@@ -64,7 +71,11 @@ public class DataGeneratorSourceUtil {
         return dataGeneratorSource;
     }
 
-    // 汽车限速规则数据mock
+    /**
+     * 汽车限速规则数据mock
+     * @param num num
+     * @return
+     */
     public static DataGeneratorSource<StreetSpeedLimitRule> streetSpeedLimitRuleDataGeneratorSource(int num) {
         DataGeneratorSource<StreetSpeedLimitRule> dataGeneratorSource = new DataGeneratorSource<StreetSpeedLimitRule>(
                 new StreetSpeedLimitRuleGeneratorFunction(),
@@ -92,6 +103,22 @@ public class DataGeneratorSourceUtil {
     }
 
     /**
+     * 工作数据mock
+     * @param num
+     * @return
+     */
+    public static DataGeneratorSource<WorkResult> workResultDataGeneratorSource(int num) {
+        DataGeneratorSource<WorkResult> dataGeneratorSource = new DataGeneratorSource<WorkResult>(
+                new WorkResultGeneratorFunction(),
+                num,
+                RateLimiterStrategy.perSecond(1),
+                TypeInformation.of(WorkResult.class)
+        );
+        log.info("workflowResultInfoDataGeneratorSource start...");
+        return dataGeneratorSource;
+    }
+
+    /**
      * 从 socket 流中获取数据
      * @param env
      * @param hostName
@@ -104,9 +131,34 @@ public class DataGeneratorSourceUtil {
         return dataStreamSource;
     }
 
-    public static void main(String[] args) throws Exception {
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.fromSource(DataGeneratorSourceUtil.carSpeedInfoDataGeneratorSource(10), WatermarkStrategy.noWatermarks(), "data-generator").print();
-        env.execute();
+    /**
+     * 生成浏览数据
+     * @param env env
+     * @return
+     */
+    public static DataStreamSource<Event> fromElementsUserUrlViews(StreamExecutionEnvironment env) {
+        return env.fromElements(
+                new Event(1,"Mary", "./home", 1000L),
+                new Event(2,"Bob", "./cart", 2000L),
+                new Event(3,"Alice", "./prod?id=100", 3000L),
+                new Event(2,"Bob", "./prod?id=1", 3300L),
+                new Event(2,"Bob", "./home", 3500L),
+                new Event(3,"Alice", "./prod?id=200", 3200L),
+                new Event(2,"Bob", "./prod?id=2", 3800L),
+                new Event(2,"Bob", "./prod?id=3", 4200L)
+        );
+    }
+
+    public static DataGeneratorSource<Tuple2<String, String>> tuple2DataGeneratorSource(int num){
+        DataGeneratorSource<Tuple2<String, String>> dataGeneratorSource = new DataGeneratorSource<Tuple2<String, String>>(
+                // 指定生成数据的具体实现类
+                new Tuple2GeneratorFunction(),
+                // 指定 输出数据的总行数
+                num,
+                // 指定 每秒发射的记录数
+                RateLimiterStrategy.perSecond(100),
+                TypeInformation.of(new TypeHint<Tuple2<String, String>>(){})
+        );
+        return dataGeneratorSource;
     }
 }
