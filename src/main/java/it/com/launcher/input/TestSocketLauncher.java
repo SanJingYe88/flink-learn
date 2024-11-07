@@ -1,4 +1,4 @@
-package it.com.launcher;
+package it.com.launcher.input;
 
 import it.com.util.DataGeneratorSourceUtil;
 import lombok.extern.slf4j.Slf4j;

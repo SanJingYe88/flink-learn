@@ -1,4 +1,4 @@
-package it.com.launcher;
+package it.com.launcher.input;
 
 import it.com.function.binlog.BinLogGeneratorFunction;
 import it.com.function.binlog.BinlogFormatFunction;
